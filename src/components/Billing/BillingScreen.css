@@ -1,0 +1,300 @@
+.billing-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+.billing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-16);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.billing-header h1 {
+  margin: 0;
+  font-size: var(--font-size-2xl);
+}
+
+.billing-header-info {
+  display: flex;
+  gap: var(--space-16);
+  font-size: var(--font-size-sm);
+}
+
+.billing-content {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: var(--space-16);
+  padding: var(--space-16);
+  flex: 1;
+  overflow: hidden;
+}
+
+.billing-left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  overflow-y: auto;
+}
+
+.barcode-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.barcode-form label {
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+}
+
+.barcode-input {
+  padding: var(--space-12);
+  font-size: var(--font-size-lg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-base);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.barcode-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.error-message {
+  padding: var(--space-12);
+  background: rgba(255, 0, 0, 0.1);
+  color: red;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+}
+
+.cart-items {
+  flex: 1;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-16);
+  overflow-y: auto;
+}
+
+.cart-items h3 {
+  margin: 0 0 var(--space-16) 0;
+}
+
+.empty-cart {
+  text-align: center;
+  color: var(--color-text-secondary);
+  padding: var(--space-32) 0;
+}
+
+.cart-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.cart-table th {
+  padding: var(--space-8);
+  text-align: left;
+  font-weight: var(--font-weight-semibold);
+}
+
+.cart-table td {
+  padding: var(--space-8);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.qty-input {
+  width: 50px;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-background);
+  color: var(--color-text);
+  text-align: center;
+}
+
+.billing-right {
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-summary {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-16);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.cart-summary h3 {
+  margin: 0;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-8) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.summary-row.total {
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  border: none;
+  color: var(--color-primary);
+}
+
+.summary-divider {
+  border-top: 2px solid var(--color-border);
+}
+
+.discount-input {
+  width: 80px;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text);
+  text-align: right;
+}
+
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.method-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-8);
+}
+
+.btn-method {
+  padding: var(--space-8);
+  border: 2px solid var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text);
+  border-radius: var(--radius-base);
+  cursor: pointer;
+}
+
+.btn-method.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  margin-top: auto;
+}
+
+.btn {
+  padding: var(--space-10) var(--space-16);
+  border: none;
+  border-radius: var(--radius-base);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium);
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.btn-secondary {
+  background: var(--color-secondary);
+  color: var(--color-text);
+}
+
+.btn-success {
+  background: var(--color-primary);
+  color: white;
+}
+
+.btn-danger {
+  background: red;
+  color: white;
+  font-size: var(--font-size-sm);
+  padding: var(--space-4) var(--space-8);
+}
+
+.btn-sm {
+  padding: var(--space-4) var(--space-8);
+  font-size: var(--font-size-sm);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-32);
+  max-width: 400px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.modal h2 {
+  margin: 0 0 var(--space-16) 0;
+}
+
+.modal-body {
+  margin-bottom: var(--space-24);
+}
+
+.modal-body p {
+  margin: var(--space-8) 0;
+}
+
+.modal-actions {
+  display: flex;
+  gap: var(--space-12);
+}
+
+.modal-actions .btn {
+  flex: 1;
+}
+
+.billing-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: var(--font-size-lg);
+}
+
+@media (max-width: 1024px) {
+  .billing-content {
+    grid-template-columns: 1fr;
+  }
+}
