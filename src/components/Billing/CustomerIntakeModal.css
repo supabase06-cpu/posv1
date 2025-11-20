@@ -1,0 +1,147 @@
+/* src/components/Billing/CustomerIntakeModal.css */
+.customer-intake-modal {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.customer-form {
+  padding: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.form-group .required {
+  color: #dc2626;
+}
+
+.form-group .optional {
+  color: #6b7280;
+  font-weight: 400;
+  font-size: 0.75rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-input:disabled {
+  background: #f3f4f6;
+  cursor: not-allowed;
+}
+
+.searching-text {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: #3b82f6;
+  font-style: italic;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn-skip {
+  flex: 1;
+}
+
+.btn-submit {
+  flex: 2;
+}
+
+.info-text {
+  padding: 1rem 1.5rem;
+  background: #f0f9ff;
+  border-top: 1px solid #e5e7eb;
+  margin: 0;
+  font-size: 0.875rem;
+  color: #1e40af;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .customer-intake-modal {
+    width: 95%;
+    max-width: none;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn-skip,
+  .btn-submit {
+    width: 100%;
+  }
+}
+
+
+/* Add to existing CustomerIntakeModal.css */
+
+.form-section {
+  margin-bottom: 1.5rem;
+}
+
+.section-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.form-divider {
+  text-align: center;
+  position: relative;
+  margin: 1.5rem 0;
+}
+
+.form-divider span {
+  background: white;
+  padding: 0 1rem;
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+}
+
+.form-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #e5e7eb;
+  z-index: 0;
+}

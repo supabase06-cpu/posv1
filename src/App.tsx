@@ -1,13 +1,50 @@
-import { useState } from 'react'
+// src/App.tsx
+import { useEffect, useRef } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
-import { ProtectedRoute } from '@/components/Auth/ProtectedRoute'
 import { LoginScreen } from '@/components/Auth/LoginScreen'
+import { Layout } from '@/components/Layout/Layout'
+import { HomePage } from '@/pages/HomePage'
 import { BillingScreen } from '@/components/Billing/BillingScreen'
+import { startSyncLoop, stopSyncLoop } from '@/services/syncService'
 import './App.css'
 
 function App() {
   const { isAuthenticated, isLoading, user, logout } = useAuth()
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+  
+  // Prevent multiple sync loop starts
+  const syncStartedRef = useRef(false)
+
+  useEffect(() => {
+    // Prevent duplicate sync loop starts
+    if (syncStartedRef.current) {
+      console.log('⏭️ [App] Sync loop already started, skipping...')
+      return
+    }
+
+    // Only start sync loop in environments with window (renderer / browser)
+    try {
+      if (typeof window !== 'undefined') {
+        console.info('[App] Starting background sync loop')
+        startSyncLoop()
+        syncStartedRef.current = true
+      }
+    } catch (err) {
+      console.warn('[App] Failed to start sync loop', err)
+    }
+
+    return () => {
+      try {
+        if (syncStartedRef.current) {
+          console.info('[App] Stopping background sync loop')
+          stopSyncLoop()
+          syncStartedRef.current = false
+        }
+      } catch (err) {
+        console.warn('[App] Failed to stop sync loop', err)
+      }
+    }
+  }, []) // Empty dependency array - runs only once
 
   if (isLoading) {
     return (
@@ -29,51 +66,29 @@ function App() {
   }
 
   return (
-    <div className="app-container">
-      <div className="app-header">
-        <div className="app-header-left">
-          <h1>POS System</h1>
-        </div>
-        <div className="app-header-right">
-          <span className="user-info">
-            {user?.first_name} {user?.last_name} ({user?.role})
-          </span>
-          <button onClick={() => setShowLogoutConfirm(true)} className="btn-logout">
-            Logout
-          </button>
-        </div>
-      </div>
-
-      <div className="app-content">
-        <ProtectedRoute requiredRole="cashier">
-          <BillingScreen
-            storeId={user?.store_id || 'store-001'}
-            cashierId={user?.id || ''}
-            cashierName={`${user?.first_name} ${user?.last_name}`}
+    <BrowserRouter>
+      <Layout onLogout={handleLogout}>
+        <Routes>
+          {/* Home Page */}
+          <Route path="/" element={<HomePage />} />
+          
+          {/* Billing Screen */}
+          <Route
+            path="/billing"
+            element={
+              <BillingScreen
+                storeId={user?.store_id || 'store-001'}
+                cashierId={user?.id || ''}
+                cashierName={`${user?.first_name} ${user?.last_name}`}
+              />
+            }
           />
-        </ProtectedRoute>
-      </div>
-
-      {showLogoutConfirm && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>Confirm Logout</h2>
-            <p>Are you sure you want to logout?</p>
-            <div className="modal-actions">
-              <button
-                onClick={() => setShowLogoutConfirm(false)}
-                className="btn btn-secondary"
-              >
-                Cancel
-              </button>
-              <button onClick={handleLogout} className="btn btn-danger">
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+          
+          {/* Redirect all other routes to home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
   )
 }
 

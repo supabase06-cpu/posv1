@@ -1,0 +1,269 @@
+/* src/components/SyncQueue/SyncQueueViewer.css */
+.sync-queue-modal {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 1200px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.sync-queue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sync-queue-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #111827;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0.5rem;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  color: #111827;
+}
+
+.sync-queue-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.sync-queue-content {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  overflow: auto;
+  flex: 1;
+}
+
+.queue-list {
+  overflow-y: auto;
+  max-height: 600px;
+}
+
+.queue-list h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.125rem;
+  color: #374151;
+}
+
+.queue-item {
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.queue-item:hover {
+  border-color: #3b82f6;
+  background: #f0f9ff;
+}
+
+.queue-item.active {
+  border-color: #3b82f6;
+  background: #dbeafe;
+}
+
+.queue-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.sale-number {
+  font-weight: 600;
+  color: #111827;
+}
+
+.sale-amount {
+  font-weight: 700;
+  color: #059669;
+}
+
+.queue-item-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.attempts-badge {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.error-badge {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.queue-details {
+  overflow-y: auto;
+  max-height: 600px;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.queue-details h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  color: #111827;
+}
+
+.queue-details h4 {
+  margin: 1.5rem 0 0.75rem 0;
+  font-size: 1rem;
+  color: #374151;
+}
+
+.detail-section {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-row .label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.detail-row .value {
+  color: #111827;
+  font-weight: 600;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.items-table th {
+  background: #f3f4f6;
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.items-table td {
+  padding: 0.75rem;
+  border-top: 1px solid #f3f4f6;
+  color: #111827;
+}
+
+.items-table tr:hover {
+  background: #f9fafb;
+}
+
+.totals {
+  background: #ecfdf5;
+}
+
+.total-row {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #059669;
+}
+
+.error-section {
+  background: #fee2e2;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.error-section h4 {
+  color: #991b1b;
+  margin: 0 0 0.5rem 0;
+}
+
+.error-message {
+  color: #7f1d1d;
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.detail-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.no-selection {
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+}
+
+.loading-state,
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+}
+
+.empty-subtitle {
+  color: #9ca3af;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sync-queue-content {
+    grid-template-columns: 1fr;
+  }
+
+  .sync-queue-modal {
+    width: 95%;
+    max-height: 95vh;
+  }
+}

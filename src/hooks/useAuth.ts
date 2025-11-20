@@ -1,21 +1,27 @@
 import { useState, useEffect } from 'react'
 import { getCurrentUser, loginUser, logoutUser, type AuthUser } from '@/services/auth'
+import { loadAllProductsForCache, loadAllCustomersForCache } from '@/services/supabase'
 
 export interface AuthSession {
   user: AuthUser
   timestamp: number
 }
 
+// GLOBAL SINGLETON - Survives React.StrictMode re-renders
+let globalCacheLoading = false
+let globalCacheLoaded = false
+
 export const useAuth = () => {
   const [session, setSession] = useState<AuthSession | null>(null)
   const [loading, setLoading] = useState(true)
-  const [isLoading, setIsLoading] = useState(false) // For login loading
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const loadSession = async () => {
       try {
         setLoading(true)
+        
         const currentUser = await getCurrentUser()
         
         if (currentUser) {
@@ -25,6 +31,28 @@ export const useAuth = () => {
           }
           setSession(currentSession)
           console.log('✅ [useAuth] User authenticated:', currentUser.email)
+          
+          // Check global flags (survives StrictMode)
+          if (globalCacheLoaded) {
+            console.log('⏭️ [useAuth] Cache already loaded, skipping...')
+          } else if (globalCacheLoading) {
+            console.log('⏭️ [useAuth] Cache load already in progress, skipping...')
+          } else {
+            console.log('📥 [useAuth] Loading offline cache (first time only)...')
+            globalCacheLoading = true
+            
+            try {
+              await Promise.all([
+                loadAllProductsForCache(currentUser.store_id),
+                loadAllCustomersForCache(currentUser.store_id),
+              ])
+              globalCacheLoaded = true
+              console.log('✅ [useAuth] Offline cache loaded successfully')
+            } catch (cacheErr) {
+              console.warn('⚠️ [useAuth] Failed to pre-cache data:', cacheErr)
+              globalCacheLoading = false
+            }
+          }
         } else {
           console.log('ℹ️ [useAuth] No authenticated user')
           setSession(null)
@@ -55,6 +83,24 @@ export const useAuth = () => {
         }
         setSession(newSession)
         console.log('✅ [useAuth] Login successful:', result.user.email)
+        
+        // Reset global flags for new login
+        globalCacheLoading = false
+        globalCacheLoaded = false
+        
+        try {
+          globalCacheLoading = true
+          await Promise.all([
+            loadAllProductsForCache(result.user.store_id),
+            loadAllCustomersForCache(result.user.store_id),
+          ])
+          globalCacheLoaded = true
+          console.log('✅ [useAuth] Offline cache loaded for', result.user.store_id)
+        } catch (cacheErr) {
+          console.warn('⚠️ [useAuth] Failed to pre-cache data:', cacheErr)
+          globalCacheLoading = false
+        }
+        
         return { success: true }
       } else {
         setError(result.error || 'Login failed')
@@ -79,6 +125,9 @@ export const useAuth = () => {
       if (result.success) {
         setSession(null)
         setError(null)
+        // Reset global flags
+        globalCacheLoading = false
+        globalCacheLoaded = false
         console.log('✅ [useAuth] Logout successful')
         return { success: true }
       } else {
@@ -96,19 +145,12 @@ export const useAuth = () => {
   }
 
   return {
-    // Current session data
     session,
     user: session?.user || null,
-    
-    // Loading states
-    loading, // Initial auth loading
-    isLoading, // Login/logout loading
-    
-    // Status
+    loading,
+    isLoading,
     isAuthenticated: !!session,
     error,
-    
-    // Actions
     login,
     logout
   }

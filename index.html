@@ -5,9 +5,122 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Supermarket POS System</title>
+
+    <!-- INLINE SPLASH STYLES (loads before any JS) -->
+    <style>
+      /* Fullscreen splash container */
+      #app-splash {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at 20% 20%, #ffffff 0%, #f6f7fb 30%, #e9eefb 100%);
+        z-index: 99999;
+        transition: opacity 360ms ease, visibility 360ms ease;
+        opacity: 1;
+        visibility: visible;
+      }
+
+      #app-splash.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .splash-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        padding: 28px 32px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(20, 30, 60, 0.08);
+        background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(250,250,255,0.95));
+        min-width: 360px;
+        max-width: 88vw;
+      }
+
+      .splash-logo {
+        width: 120px;
+        height: 120px;
+        object-fit: contain;
+        border-radius: 8px;
+        background: transparent;
+      }
+
+      .splash-title {
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        font-size: 20px;
+        font-weight: 700;
+        color: #0b2545;
+        text-align: center;
+      }
+
+      .splash-sub {
+        font-size: 13px;
+        color: #6b7280;
+        text-align: center;
+      }
+
+      .splash-progress {
+        margin-top: 6px;
+        width: 160px;
+        height: 6px;
+        border-radius: 99px;
+        background: #e6eefc;
+        overflow: hidden;
+      }
+
+      .splash-progress > i {
+        display: block;
+        height: 100%;
+        width: 28%;
+        background: linear-gradient(90deg, #2b6ef6, #4fb3ff);
+        border-radius: 99px;
+        animation: splash-loading 1s linear infinite;
+      }
+
+      @keyframes splash-loading {
+        0% { transform: translateX(-10%); }
+        50% { transform: translateX(60%); }
+        100% { transform: translateX(200%); }
+      }
+
+      /* ensure the root is hidden until React mounts to avoid flash */
+      #root {
+        visibility: hidden;
+      }
+    </style>
   </head>
   <body>
+    <!-- SPLASH MARKUP (renders BEFORE JS) -->
+    <div id="app-splash" aria-hidden="true">
+      <div class="splash-card" role="status" aria-live="polite">
+        <!-- Uses your Tauri icon shipped in src-tauri/icons; Vite serves it during dev/build -->
+        <img class="splash-logo" src="/src-tauri/icons/StoreLogo.png" alt="Store logo" onerror="this.style.display='none'"/>
+        <div>
+          <div class="splash-title">Supermarket POS</div>
+          <div class="splash-sub">Initializing — please wait</div>
+        </div>
+        <div class="splash-progress"><i></i></div>
+      </div>
+    </div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Minimal inline script to ensure splash remains until React signals ready.
+         The React entry (main.tsx) will remove the splash explicitly when booted. -->
+    <script>
+      // Keep splash visible until React removes it.
+      // In a very rare case React never loads, you may want a timeout fallback:
+      window.__SPLASH_TIMEOUT = setTimeout(() => {
+        const s = document.getElementById('app-splash');
+        if (s) s.classList.add('hidden');
+        const r = document.getElementById('root');
+        if (r) r.style.visibility = 'visible';
+      }, 10000); // 10s fallback
+    </script>
   </body>
 </html>

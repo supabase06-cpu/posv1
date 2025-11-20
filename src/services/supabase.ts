@@ -1,4 +1,3 @@
-// src/services/supabase.ts
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from '../types/database'
 
@@ -30,7 +29,6 @@ export const getProducts = async (storeId: string = STORE_CONFIG.STORE_ID) => {
     console.error('Error fetching products:', error)
     return []
   }
-
   return (data as Database['public']['Tables']['products']['Row'][] | null) || []
 }
 
@@ -226,7 +224,6 @@ export const createSale = async (sale: Database['public']['Tables']['sales']['In
     store_id: sale.store_id || STORE_CONFIG.STORE_ID,
   }
 
-  // cast the from('sales') call to any so insert overloads don't resolve to `never` in this environment
   const { data, error } = await (supabase.from('sales') as any)
     .insert(saleData)
     .select()
@@ -239,6 +236,7 @@ export const createSale = async (sale: Database['public']['Tables']['sales']['In
   return (data as Database['public']['Tables']['sales']['Row'][] | null)?.[0] || null
 }
 
+
 /**
  * Update inventory (by product_id)
  */
@@ -247,7 +245,6 @@ export const updateInventory = async (
   newStock: number,
   storeId: string = STORE_CONFIG.STORE_ID
 ) => {
-  // cast the from('inventory') call to any to bypass the `never`-typed overloads in current toolchain
   const { data, error } = await (supabase.from('inventory') as any)
     .update({ current_stock: newStock })
     .eq('product_id', productId)
@@ -299,4 +296,210 @@ export const getInventory = async (storeId: string = STORE_CONFIG.STORE_ID) => {
   }
 
   return (data as Database['public']['Tables']['inventory']['Row'][] | null) || []
+}
+
+/**
+ * Load all products for a store and cache them locally for offline billing
+ * Call this after user login to enable offline mode
+ */
+export const loadAllProductsForCache = async (storeId: string = STORE_CONFIG.STORE_ID): Promise<void> => {
+  try {
+    console.log('📥 [supabase] Loading products for cache... Store ID:', storeId)
+    
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('store_id', storeId)
+      .eq('is_active', true)
+
+    if (error) {
+      console.error('❌ [supabase] Error loading products:', error)
+      throw error
+    }
+
+    if (data && data.length > 0) {
+      const productCache = await import('./productCache')
+      await productCache.upsertProducts(data, storeId)
+      console.log(`✅ [supabase] Successfully cached ${data.length} products for offline use`)
+    } else {
+      console.warn('⚠️ [supabase] No active products found for store:', storeId)
+    }
+  } catch (err) {
+    console.error('❌ [supabase] Error in loadAllProductsForCache:', err)
+    throw err
+  }
+}
+
+/**
+ * Load all customers for a store and cache them locally for offline search
+ * Call this after user login to enable offline mode
+ */
+export const loadAllCustomersForCache = async (storeId: string = STORE_CONFIG.STORE_ID): Promise<void> => {
+  try {
+    console.log('📥 [supabase] Loading customers for cache... Store ID:', storeId)
+    
+    const { data, error } = await supabase
+      .from('customers')
+      .select('*')
+      .eq('store_id', storeId)
+      .eq('is_active', true)
+
+    if (error) {
+      console.error('❌ [supabase] Error loading customers:', error)
+      throw error
+    }
+
+    if (data && data.length > 0) {
+      const customerCache = await import('./customerCache')
+      await customerCache.upsertCustomers(data, storeId)
+      console.log(`✅ [supabase] Successfully cached ${data.length} customers for offline use`)
+    } else {
+      console.warn('⚠️ [supabase] No active customers found for store:', storeId)
+    }
+  } catch (err) {
+    console.error('❌ [supabase] Error in loadAllCustomersForCache:', err)
+    throw err
+  }
+}
+
+/**
+ * Get today's sales total for a store
+ */
+export const getTodaysSales = async (storeId: string = STORE_CONFIG.STORE_ID): Promise<number> => {
+  try {
+    const today = new Date().toISOString().split('T')[0] // YYYY-MM-DD
+    
+    const { data, error } = await (supabase
+      .from('sales')
+      .select('total')
+      .eq('store_id', storeId)
+      .eq('sale_date', today) as any)
+
+    if (error) {
+      console.error('❌ [getTodaysSales] Error:', error)
+      return 0
+    }
+
+    const total = (data as Array<{ total: number | string | null }>)?.reduce(
+      (sum, sale) => sum + Number(sale.total || 0), 
+      0
+    ) || 0
+    
+    return total
+  } catch (err) {
+    console.error('❌ [getTodaysSales] Exception:', err)
+    return 0
+  }
+}
+
+/**
+ * Get sales total for a date range (used for homepage date filter)
+ */
+export const getSalesByDateRange = async (
+  storeId: string = STORE_CONFIG.STORE_ID,
+  fromDate: string,
+  toDate: string
+): Promise<number> => {
+  try {
+    console.log(`📊 [getSalesByDateRange] Fetching sales from ${fromDate} to ${toDate}`)
+    
+    const { data, error } = await (supabase
+      .from('sales')
+      .select('total')
+      .eq('store_id', storeId)
+      .gte('sale_date', fromDate)
+      .lte('sale_date', toDate) as any)
+
+    if (error) {
+      console.error('❌ [getSalesByDateRange] Error:', error)
+      return 0
+    }
+
+    const total = (data as Array<{ total: number | string | null }>)?.reduce(
+      (sum, sale) => sum + Number(sale.total || 0), 
+      0
+    ) || 0
+    
+    console.log(`✅ [getSalesByDateRange] Total: ₹${total.toFixed(2)}`)
+    return total
+  } catch (err) {
+    console.error('❌ [getSalesByDateRange] Exception:', err)
+    return 0
+  }
+}
+
+/**
+ * Get total active products count for a store
+ */
+export const getTotalProductsCount = async (storeId: string = STORE_CONFIG.STORE_ID): Promise<number> => {
+  try {
+    const { count, error } = await supabase
+      .from('products')
+      .select('*', { count: 'exact', head: true })
+      .eq('store_id', storeId)
+      .eq('is_active', true)
+
+    if (error) {
+      console.error('❌ [getTotalProductsCount] Error:', error)
+      return 0
+    }
+
+    return count || 0
+  } catch (err) {
+    console.error('❌ [getTotalProductsCount] Exception:', err)
+    return 0
+  }
+}
+
+
+
+/**
+ * Get pending sync count (unsynced sales)
+ */
+export const getPendingSyncCount = async (storeId: string = STORE_CONFIG.STORE_ID): Promise<number> => {
+  try {
+    const { count, error } = await supabase
+      .from('sales')
+      .select('*', { count: 'exact', head: true })
+      .eq('store_id', storeId)
+      .eq('synced', false)
+
+    if (error) {
+      console.error('❌ [getPendingSyncCount] Error:', error)
+      return 0
+    }
+
+    return count || 0
+  } catch (err) {
+    console.error('❌ [getPendingSyncCount] Exception:', err)
+    return 0
+  }
+}
+
+/**
+ * Mark a sale as synced in the database
+ */
+export const markSaleSynced = async (saleId: string): Promise<boolean> => {
+  try {
+    const updateData = {
+      synced: true,
+      last_synced_at: new Date().toISOString(),
+    }
+
+    // Cast 'from' to 'any' to bypass strict typing preventing .update argument
+    const { error } = await (supabase.from('sales') as any)
+      .update(updateData)
+      .eq('id', saleId)
+
+    if (error) {
+      console.error('❌ [markSaleSynced] Error:', error)
+      return false
+    }
+
+
+    return true
+  } catch (err) {
+    console.error('❌ [markSaleSynced] Exception:', err)
+    return false
+  }
 }

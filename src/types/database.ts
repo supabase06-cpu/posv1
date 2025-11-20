@@ -1,3 +1,4 @@
+// src/types/database.ts
 export type Database = {
   public: {
     Tables: {
@@ -30,6 +31,84 @@ export type Database = {
           is_active?: boolean
         }
       }
+
+      customers: {
+        Row: {
+          id: number
+          customer_name: string
+          phone: string | null
+          email: string | null
+          store_id: string
+          total_purchases: number
+          total_spent: number
+          last_purchase_date: string | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          customer_name: string
+          phone?: string | null
+          email?: string | null
+          store_id: string
+          total_purchases?: number
+          total_spent?: number
+          last_purchase_date?: string | null
+          is_active?: boolean
+        }
+        Update: {
+          customer_name?: string
+          phone?: string | null
+          email?: string | null
+          total_purchases?: number
+          total_spent?: number
+          last_purchase_date?: string | null
+          is_active?: boolean
+        }
+      }
+
+      sales_intake: {
+        Row: {
+          id: number
+          sale_id: string
+          sale_number: string | null
+          customer_id: number | null
+          customer_name: string | null
+          customer_phone: string | null
+          customer_email: string | null
+          customer_skipped: boolean
+          store_id: string
+          counter_id: string | null
+          cashier_id: string | null
+          cashier_name: string | null
+          sale_amount: number
+          payment_method: string | null
+          sale_date: string
+          created_at: string
+        }
+        Insert: {
+          sale_id: string
+          sale_number?: string | null
+          customer_id?: number | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          customer_email?: string | null
+          customer_skipped?: boolean
+          store_id: string
+          counter_id?: string | null
+          cashier_id?: string | null
+          cashier_name?: string | null
+          sale_amount: number
+          payment_method?: string | null
+          sale_date: string
+        }
+        Update: {
+          customer_id?: number | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          customer_email?: string | null
+        }
+      }
       
       products: {
         Row: {
@@ -42,7 +121,7 @@ export type Database = {
           cost: number
           stock: number
           reorder_level: number
-          unit: string | null
+          weight_unit: string | null  // Changed from 'unit'
           barcode: string | null
           image_url: string | null
           is_active: boolean
@@ -51,6 +130,16 @@ export type Database = {
           updated_at: string
           synced: boolean
           last_synced_at: string | null
+          // NEW COLUMNS
+          gst_rate: number | null
+          hsn_code: string | null
+          tax_category: string | null
+          selling_price: number | null
+          max_discount_percent: number | null
+          wholesale_price: number | null
+          weight: number | null
+          rack_location: string | null
+          min_wholesale_qty: number | null
         }
         Insert: {
           sku: string
@@ -61,12 +150,21 @@ export type Database = {
           cost: number
           stock?: number
           reorder_level?: number
-          unit?: string | null
+          weight_unit?: string | null
           barcode?: string | null
           image_url?: string | null
           is_active?: boolean
           store_id: string
           synced?: boolean
+          gst_rate?: number | null
+          hsn_code?: string | null
+          tax_category?: string | null
+          selling_price?: number | null
+          max_discount_percent?: number | null
+          wholesale_price?: number | null
+          weight?: number | null
+          rack_location?: string | null
+          min_wholesale_qty?: number | null
         }
         Update: {
           sku?: string
@@ -77,11 +175,20 @@ export type Database = {
           cost?: number
           stock?: number
           reorder_level?: number
-          unit?: string | null
+          weight_unit?: string | null
           barcode?: string | null
           image_url?: string | null
           is_active?: boolean
           synced?: boolean
+          gst_rate?: number | null
+          hsn_code?: string | null
+          tax_category?: string | null
+          selling_price?: number | null
+          max_discount_percent?: number | null
+          wholesale_price?: number | null
+          weight?: number | null
+          rack_location?: string | null
+          min_wholesale_qty?: number | null
         }
       }
 

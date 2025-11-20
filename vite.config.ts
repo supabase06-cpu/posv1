@@ -1,4 +1,3 @@
-
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
@@ -12,5 +11,14 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    hmr: {
+      overlay: false
+    }
   },
+  optimizeDeps: {
+    exclude: ['@tauri-apps/api', '@tauri-apps/api/fs', '@tauri-apps/api/path']
+  },
+  ssr: {
+    external: ['@tauri-apps/api', '@tauri-apps/api/fs', '@tauri-apps/api/path']
+  }
 })
